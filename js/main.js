@@ -54,3 +54,18 @@ function update_goods(){
         }
     }
 }
+
+document.querySelector('.list').addEventListener('click', function(e){
+    if (!e.target.dataset.goods) {
+        return
+    }
+    let goods = JSON.parse(localStorage.getItem('goods'))
+    for (let i = 0; i < goods.lenght; i++){
+        if (goods[i][4] > 0 && goods [i][0] == e.target.dataset.delete){
+            good[i].splice(3, 1, goods[i][3]+1)
+            goods[i].splice(4,1, goods[i][4] - 1)
+            loicalStorage.setItem('goods', JSON.stringify(goods))
+            update_goods()
+        }
+    }
+})
