@@ -1,3 +1,8 @@
+var options = {
+    valueNames: ['name','price']
+}
+var userList
+
 var myModal = new bootstrap.Modal(document.getElementById("exampleModal"),{
     Keyboard: false
 })
@@ -31,13 +36,14 @@ document.querySelector('button.add_new').addEventListener('click', function(e) {
 update_goods()
 
 function update_goods(){
+    let result_price = 0
     let tbody = document.querySelector('.list')
     tbody.innerHTML = ""
     document.querySelector('.cart').innerHTML = ""
     let goods = JSON.parse(localStorage.getItem('goods'))
     if (goods.length){
-        // table1.hidden = false
-        // table1.hidden = false
+        table1.hidden = false
+        table1.hidden = false
         for (let i=0; i < goods.length; i++){// python i +=1
             tbody.insertAdjacentHTML('beforeend',
             `
@@ -51,21 +57,63 @@ function update_goods(){
             </tr>
             `
             )
+            if (goods[i][4] > 0) {
+                goods[i][6] = goods[i][4] * goods[i][2] - goods[i][4] * goods[i][5]*0.01
+                result_price += goods[i][6]
+                document.querySelector('.cart').insertAdjacentHTML('beforeend',
+                `
+                <tr class="alighn-middle">
+                    <td>${i+1}</td>
+                    <td class ="price_name">${goods[i][1]}</td>
+                    <td class ="price_one">${goods[i][2]}</td>
+                    <td class="price_discount">${goods[i][4]}</td>
+                    <td class="price_discount">
+                        <input data-goodid="${goods[i][0]}"type="text: value="${goods[i][5]}" min="0" max="100"
+                        </td>
+                    <td>${goods[i][6]}</td>
+                    <td><button class ='good_delete btn-danger' data-delete='${goods[i][0]}'>&#10006;</button></td>
+                </tr>
+                `
+                )
+            }
         }
+        userList = new List('goods', options);
+    } else {
+        table1.hidden = True
+        table2.hidden = True
     }
+    console.log(result_price)
+    document.querySelector('.price_result').innerHTML = result_price + ' &#8381'
 }
 
 document.querySelector('.list').addEventListener('click', function(e){
     if (!e.target.dataset.goods) {
+        console.log("oops")
         return
     }
     let goods = JSON.parse(localStorage.getItem('goods'))
-    for (let i = 0; i < goods.lenght; i++){
-        if (goods[i][4] > 0 && goods [i][0] == e.target.dataset.delete){
-            good[i].splice(3, 1, goods[i][3]+1)
-            goods[i].splice(4,1, goods[i][4] - 1)
-            loicalStorage.setItem('goods', JSON.stringify(goods))
+    for (let i = 0; i < goods.length; i++){
+        if (goods[i][3] > 0 && goods [i][0] == e.target.dataset.goods){
+            console.log("in if")
+            goods[i].splice(3, 1, goods[i][3]-1)
+            goods[i].splice(4,1, goods[i][4] + 1)
+            localStorage.setItem('goods', JSON.stringify(goods))
             update_goods()
+        }
+    }
+})
+
+document.querySelector('.cart').addEventListener('click', function(e) {
+    if (!e.target.dataset.delete) {
+        return
+    }
+    let goods = JSON.parse(localStorage.getItem('goods'))
+    for (let i = 0; i < goods.length; i ++) {
+        if (goods[i][0] == e.target.dataset.delete && goods[i][4] > 0){
+        goods[i].splice(3, 1, goods[i][3] + 1)
+        goods[i].splice(4, 1, goods[i][4] - 1)
+        localStorage.setItem('goods', JSON.stringify(goods))
+        update_goods()
         }
     }
 })
